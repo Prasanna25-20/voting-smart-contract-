@@ -1,0 +1,92 @@
+#  Blockchain Voting System – Smart Contract
+
+A decentralized, secure, and transparent voting system implemented using **Solidity** on the Ethereum-compatible blockchain. This smart contract allows voter and candidate registration, controlled voting periods, one-time vote casting, and final result declaration — all handled on-chain with admin control.
+
+##  Features
+
+-  Voter registration with age and gender validation
+-  Candidate registration with party details and age verification
+-  Controlled voting period (start and end time)
+-  One-person-one-vote enforcement
+-  Result announcement for the highest voted candidate
+-  Emergency stop functionality
+-  Clean use of Solidity best practices (enums, mappings, modifiers)
+
+
+##  Contract Overview
+
+### Entities
+
+#### Voter
+- `name`: string
+- `age`: uint
+- `voterId`: uint
+- `gender`: enum (Male/Female/Other)
+- `voteCandidateId`: uint
+- `voterAddress`: address
+
+#### Candidate
+- `name`: string
+- `party`: string
+- `age`: uint
+- `gender`: enum
+- `candidateId`: uint
+- `candidateAddress`: address
+- `votes`: uint
+
+---
+
+##  Key Roles
+
+- **Election Commissioner**: Contract deployer who can set the voting period, announce results, and stop elections if needed.
+
+
+##  Voting Lifecycle
+
+1. **Deploy contract** – Commissioner is set
+2. **Register candidates** (max 2)
+3. **Register voters** (age ≥ 18)
+4. **Set voting period** (start + end)
+5. **Voting opens** → voters cast vote
+6. **Voting closes** → commissioner announces winner
+
+
+##  Functions
+
+###  Voter Functions
+- `registerVoter(string _name, uint _age, Gender _gender)`
+- `getVoterList()`
+- `castVote(uint _voterId, uint _candidateId)`
+
+###  Candidate Functions
+- `registerCandidate(string _name, string _party, uint _age, Gender _gender)`
+- `getCandidateList()`
+
+###  Admin Functions (Commissioner Only)
+- `setVotingPeriod(uint _startTimeDuration, uint _endTimeDuration)`
+- `announceVotingResult()`
+- `emergencyStopVoting()`
+
+###  Utility
+- `getVotingStatus()` – returns current election status (enum)
+
+
+##  Security Considerations
+
+- Only verified voters can vote
+- Voters and candidates can't register more than once
+- Voting allowed only during the set period
+- Emergency stop  halts all vote casting immediately
+
+##  Sample Voting Status Flow
+
+```solidity
+VotingStatus public status = getVotingStatus();
+
+if (status == VotingStatus.NotStarted) {
+    // Wait for voting to open
+} else if (status == VotingStatus.InProgress) {
+    // Allow voting
+} else {
+    // Announce winner or stop voting
+}
